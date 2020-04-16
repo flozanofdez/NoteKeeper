@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
             android.R.layout.simple_spinner_item,
             DataManager.courses.values.toList())
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
         spinnerCourses.adapter = adapterCourses
 
         notePosition = savedInstanceState?.getInt(NOTE_POSITION, POSITION_NOT_SET) ?:
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayNote() {
         if(notePosition > DataManager.notes.lastIndex){
-            Snackbar.make(textNoteTitle, "Note not found", Snackbar.LENGTH_LONG).show()
+            showMessage("Note not found")
             return
         }
         val note = DataManager.notes[notePosition]
@@ -71,12 +72,17 @@ class MainActivity : AppCompatActivity() {
                 if(notePosition < DataManager.notes.lastIndex){
                     moveNext()
                 } else {
-                    Snackbar.make(textNoteTitle, "No more notes", Snackbar.LENGTH_LONG)
+                    val message = "No more notes"
+                    showMessage(message)
                 }
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(textNoteTitle, message, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onPause() {
@@ -85,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveNote() {
-        var note = DataManager.notes[notePosition]
+        val note = DataManager.notes[notePosition]
         note.title = textNoteTitle.text.toString()
         note.text = textNoteText.text.toString()
         note.course = spinnerCourses.selectedItem as CourseInfo
@@ -99,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         if(notePosition >= DataManager.notes.lastIndex){
-            var menuItem = menu?.findItem(R.id.action_next)
+            val menuItem = menu?.findItem(R.id.action_next)
             if(menuItem != null) {
                 menuItem.icon = getDrawable(R.drawable.ic_block_white_24dp)
                 menuItem.isEnabled = false
